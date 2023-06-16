@@ -1,0 +1,1 @@
+# platform-substreams-indexer
