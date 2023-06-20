@@ -145,12 +145,15 @@ pub fn transform_transfers_database_changes(
                 0,
                 table_change::Operation::Create,
             )
-            .change("collection_id", (None, dcl_hex!(transfer.collection_id)))
+            .change(
+                "collection_id",
+                (None, dcl_hex!(transfer.collection_id.clone())),
+            )
             .change(
                 "token_id",
                 (
                     None,
-                    BigInt::from(transfer.token_id.unwrap_or(dcl::BigInt {
+                    BigInt::from(transfer.token_id.clone().unwrap_or(dcl::BigInt {
                         value: String::from("0"),
                     })),
                 ),
@@ -158,5 +161,19 @@ pub fn transform_transfers_database_changes(
             .change("block_timestamp", (None, transfer.block_timestamp))
             .change("from_address", (None, dcl_hex!(transfer.from)))
             .change("to_address", (None, dcl_hex!(transfer.to)));
+
+        changes
+            .push_change(
+                String::from("nfts"),
+                dcl_hex!(format!(
+                    "{}-{}",
+                    transfer.collection_id,
+                    transfer.token_id.unwrap().value
+                )),
+                0,
+                table_change::Operation::Update,
+            )
+            .change("owner", (None, dcl_hex!(transfer.to.clone())))
+            .change("updated_at", (None, transfer.block_timestamp));
     }
 }
