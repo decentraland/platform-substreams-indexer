@@ -9,4 +9,5 @@ fi
     "substreams.yaml" \
     --development-mode=true \
     --undo-buffer-size=100 \
+    --metrics-listen-addr=0.0.0.0:9102 \
     db_out
