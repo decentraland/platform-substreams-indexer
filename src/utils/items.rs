@@ -1,5 +1,3 @@
-use substreams::log;
-
 const WEARABLE: &str = "wearable";
 const EMOTE: &str = "emote";
 const SMART_WEARABLE: &str = "smart_wearable";
@@ -22,7 +20,6 @@ pub struct ItemMetadata {
 
 pub fn build_item_metadata(raw_metadata: String) -> ItemMetadata {
     let splitted: Vec<_> = raw_metadata.split(':').collect();
-    log::info!("splitted {:?}", splitted);
     ItemMetadata {
         item_type: match splitted[1] {
             WEARABLE_V1 => WEARABLE.to_string(),

@@ -22,7 +22,6 @@ services:
     environment:
       POSTGRES_USER: substreams_admin
       POSTGRES_PASSWORD: pass
-      # POSTGRES_PORT: 5431
     volumes:
       - ./postgres-data-dev:/var/lib/postgresql/data
       - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
