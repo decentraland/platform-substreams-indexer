@@ -67,7 +67,6 @@ pub fn transform_collection_database_changes(
 
 pub fn transform_item_database_changes(changes: &mut DatabaseChanges, items: dcl::Items) {
     for item in items.items {
-        let sanitized_metadata = sanitize_sql_string(item.metadata);
         changes
             .push_change(
                 "items".to_string(),
@@ -123,7 +122,10 @@ pub fn transform_item_database_changes(changes: &mut DatabaseChanges, items: dcl
             )
             .change("rarity", (None, item.rarity))
             .change("beneficiary", (None, item.beneficiary))
-            .change("raw_metadata", (None, sanitized_metadata))
+            .change("name", (None, item.name))
+            .change("description", (None, item.description))
+            .change("category", (None, item.category))
+            .change("body_shapes", (None, item.body_shapes))
             .change("created_at", (None, item.created_at))
             .change("collection_id", (None, dcl_hex!(item.collection_id)));
     }
