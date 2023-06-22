@@ -9,3 +9,4 @@ postgres-data
 postgres-data-dev
 substreams-sink-postgres_darwin_x86_64/
 substreams-sink-postgres
+nohup*

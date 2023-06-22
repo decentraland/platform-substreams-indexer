@@ -19,3 +19,15 @@ rm substreams_linux_x86_64.tar.gz
 wget https://github.com/streamingfast/substreams-sink-postgres/releases/download/v2.3.2/substreams-sink-postgres_linux_x86_64.tar.gz
 tar zxf substreams-sink-postgres_linux_x86_64.tar.gz
 rm substreams-sink-postgres_linux_x86_64.tar.gz
+
+
+
+###### for ownership server
+curl -sL https://deb.nodesource.com/setup_18.x -o /tmp/nodesource_setup.sh
+sudo bash /tmp/nodesource_setup.sh
+sudo apt install -y nodejs
+
+# sudo apt-get install gcc g++ make
+# curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+#      echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+#      sudo apt-get update && sudo apt-get install yarn
