@@ -9,7 +9,6 @@ fi
     "psql://substreams_admin:pass@localhost:$PORT/substreams_admin?sslmode=disable" \
     "polygon.streamingfast.io:443" \
     "substreams.yaml" \
-    --development-mode=true \
     --undo-buffer-size=100 \
     --metrics-listen-addr=0.0.0.0:$METRICS_PORT \
     db_out
