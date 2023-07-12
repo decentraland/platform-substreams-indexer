@@ -54,8 +54,8 @@ message NFT {
     string itemId = 3;
     BigInt issuedId = 4;
     string collection_address = 5;
-    string created_at = 6;
-    string updated_at = 7;
+    uint64 created_at = 6;
+    uint64 updated_at = 7;
 }
 
 message Transfers {
@@ -67,7 +67,7 @@ message Transfer {
     string to = 2;
     BigInt token_id = 3;
     string collection_id = 4;
-    uint64 block_timestamp = 5;
+    uint64 created_at = 5;
     string tx_hash = 6;
     uint32 log_index = 7;
 }

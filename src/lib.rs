@@ -103,7 +103,7 @@ pub fn map_issues(
 
                 if collection_exists {
                     if let Some(event) = abi::collections_v2::events::Issue::match_and_decode(log) {
-                        let timestamp = blk.timestamp_seconds().to_string();
+                        let timestamp = blk.timestamp_seconds();
                         let nft = dcl::Nft {
                             beneficiary: Hex(&event.beneficiary).to_string(),
                             issued_id: Some(event.issued_id.into()),
@@ -261,7 +261,7 @@ pub fn map_transfers(
                             to: Hex(event.to).to_string(),
                             token_id: Some(event.token_id.into()),
                             collection_id: collection_address.clone(),
-                            block_timestamp: blk.timestamp_seconds(),
+                            created_at: blk.timestamp_seconds(),
                             tx_hash: Hex(trx.hash.clone()).to_string(),
                             log_index: log.index,
                         };

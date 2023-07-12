@@ -160,7 +160,7 @@ pub fn transform_transfers_database_changes(
                     })),
                 ),
             )
-            .change("block_timestamp", (None, transfer.block_timestamp))
+            .change("created_at", (None, transfer.created_at))
             .change("from_address", (None, dcl_hex!(transfer.from)))
             .change("to_address", (None, dcl_hex!(transfer.to)));
 
@@ -176,6 +176,6 @@ pub fn transform_transfers_database_changes(
                 table_change::Operation::Update,
             )
             .change("owner", (None, dcl_hex!(transfer.to.clone())))
-            .change("updated_at", (None, transfer.block_timestamp));
+            .change("updated_at", (None, transfer.created_at));
     }
 }

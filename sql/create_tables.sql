@@ -57,15 +57,15 @@ CREATE TABLE IF NOT EXISTS nfts (
 	issued_id TEXT NOT NULL,
 	item_id TEXT NOT NULL,
 	owner TEXT NOT NULL,
-	created_at TEXT NOT NULL,
-	updated_at TEXT NOT NULL
+	created_at INTEGER NOT NULL,
+	updated_at INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS transfers (
 	id TEXT NOT NULL PRIMARY KEY,
 	token_id TEXT NOT NULL, -- CONSTRAINT fk_nfts FOREIGN KEY(token_id) REFERENCES nfts(token_id)
 	collection_id TEXT NOT NULL, -- CONSTRAINT fk_collection FOREIGN KEY(collection_id) REFERENCES collections(id)
-	block_timestamp INTEGER NOT NULL,
 	from_address TEXT NOT NULL,
-	to_address TEXT NOT NULL
+	to_address TEXT NOT NULL,
+	created_at INTEGER NOT NULL
 );
