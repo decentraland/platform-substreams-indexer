@@ -5,16 +5,16 @@ mod pb;
 mod rpc;
 mod utils;
 
+use std::collections::HashSet;
+
 use hex_literal::hex;
 use pb::dcl;
 use substreams::prelude::*;
-use substreams::scalar::BigInt;
 use substreams::{log, Hex};
 use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_ethereum::pb::eth::v2 as eth;
 use substreams_ethereum::Event;
-
-use crate::utils::sanitize_sql_string;
+use utils::sanitize_sql_string;
 
 // Polygon's Contracts
 const _MARKETPLACE_CONTRACT: [u8; 20] = hex!("02080031b45A3c67d338Dd4A2CC309D28756A160");
@@ -38,11 +38,6 @@ pub fn map_collection_created(
                 &COLLECTIONS_V3_FACTORY,
             ])
             .map(|(event, _log)| {
-                substreams::log::info!(
-                    "Collection created {:?}",
-                    Hex(event.address.clone()).to_string()
-                );
-
                 let collection_data = rpc::collection_data_call(event.address.clone()); //@TODO avoid clone?
                 dcl::Collection {
                     address: Hex(event.address).to_string(),
@@ -165,7 +160,8 @@ pub fn map_add_items(
                     metadata,
                     content_hash,
                 } = item;
-                sanitize_sql_string(metadata.clone());
+                let item_metadata =
+                    utils::items::build_item_metadata(sanitize_sql_string(metadata.clone()));
                 dcl::Item {
                     id: utils::get_item_id(
                         Hex(log.address()).to_string(),
@@ -176,24 +172,27 @@ pub fn map_add_items(
                     total_supply: Some(total_supply.into()),
                     price: Some(price.into()),
                     beneficiary: Hex(beneficiary).to_string(),
-                    metadata: metadata.clone(),
+                    metadata,
                     content_hash,
                     blockchain_item_id: Some(add_item_event.item_id.into()),
                     collection_id: Hex(log.address()).to_string(),
                     created_at: blk.timestamp_seconds(),
-                    item_type: utils::items::build_item_metadata(metadata).item_type,
+                    item_type: item_metadata.item_type,
+                    name: item_metadata.name,
+                    description: item_metadata.description,
+                    category: item_metadata.category,
+                    body_shapes: item_metadata.body_shapes,
                 }
             })
             .collect(),
     })
 }
 
-// Reads the `Complete` event from the Collection contract and the items from it
 #[substreams::handlers::map]
-pub fn map_collection_complete(
+pub fn map_collections_complete(
     blk: eth::Block,
     collections: dcl::Collections,
-) -> Result<dcl::Items, substreams::errors::Error> {
+) -> Result<dcl::CompletedCollections, substreams::errors::Error> {
     let mut addresses = vec![];
     for collection in collections.collections {
         match hex::decode(&collection.address) {
@@ -207,42 +206,11 @@ pub fn map_collection_complete(
         addresses_ref.push(address.as_slice());
     }
 
-    Ok(dcl::Items {
-        items: blk
+    Ok(dcl::CompletedCollections {
+        completed_collections: blk
             .events::<abi::collections_v2::events::Complete>(&addresses_ref)
-            .flat_map(|(_complete_event, log)| {
-                let collection_item_count = rpc::get_collection_item_count(log.address().to_vec());
-                let mut items = vec![];
-                let item_amount =
-                    BigInt::to_u64(&collection_item_count.unwrap_or_else(BigInt::zero));
-                for n in 0..item_amount {
-                    match rpc::get_collection_item(log.address().to_vec(), n) {
-                        Some(item) => items.push(dcl::Item {
-                            id: utils::get_item_id(Hex(log.address()).to_string(), n.to_string()),
-                            rarity: item.0,
-                            max_supply: Some(item.1.into()),
-                            total_supply: Some(dcl::BigInt {
-                                value: item.2.to_string(),
-                            }),
-                            price: Some(dcl::BigInt {
-                                value: item.3.to_string(),
-                            }),
-                            beneficiary: Hex(item.4).to_string(),
-                            metadata: item.5.clone(),
-                            content_hash: item.6,
-                            blockchain_item_id: Some(dcl::BigInt {
-                                value: n.to_string(),
-                            }),
-                            collection_id: Hex(log.address()).to_string(),
-                            created_at: blk.timestamp_seconds(),
-                            item_type: utils::items::build_item_metadata(item.5).item_type,
-                        }),
-                        None => continue,
-                    }
-                }
-                items
-            })
-            .collect::<Vec<dcl::Item>>(),
+            .map(|(_complete_event, log)| Hex(log.address()).to_string())
+            .collect::<Vec<String>>(),
     })
 }
 
@@ -297,7 +265,6 @@ pub fn map_transfers(
                             tx_hash: Hex(trx.hash.clone()).to_string(),
                             log_index: log.index,
                         };
-                        substreams::log::info!("Transfer: {:?}", transfer);
                         transfers.push(transfer);
                     }
                 }
@@ -327,7 +294,6 @@ pub fn map_land_transfers(
 
     let mut addresses_ref = vec![];
     for address in &addresses {
-        // substreams::log::info!("address {:?}", Hex(address).to_string());
         addresses_ref.push(address.as_slice());
     }
     for trx in blk.transactions() {
@@ -365,8 +331,12 @@ fn db_out(
     transfers: dcl::Transfers,
     collections: dcl::Collections,
     items: dcl::Items,
+    completed_collections: dcl::CompletedCollections,
 ) -> Result<DatabaseChanges, substreams::errors::Error> {
     let mut database_changes: DatabaseChanges = Default::default();
+
+    let _completed_collections_set: HashSet<String> =
+        HashSet::from_iter(completed_collections.completed_collections.iter().cloned());
     // log::info!("In db out nfts {:?}", nfts);
     db::transform_nfts_database_changes(&mut database_changes, nfts);
     // log::info!("In db out transfers {:?}", transfers);

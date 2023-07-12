@@ -23,6 +23,10 @@ message Item {
     string collection_id = 10;
     uint64 created_at = 11;
     string item_type = 12;
+    string name = 13;
+    string description = 14;
+    string category = 15;
+    string body_shapes = 16;
 }
 
 message Collections {
@@ -76,5 +80,9 @@ message LandTransfer {
     string from = 1;
     string to = 2;
     BigInt asset_id = 3;
+}
+
+message CompletedCollections {
+    repeated string completed_collections = 1;
 }
 

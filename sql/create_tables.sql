@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS items (
 	max_supply TEXT NOT NULL,
 	rarity TEXT NOT NULL,
 	beneficiary TEXT NOT NULL,
-	raw_metadata TEXT NOT NULL,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL,
+	category TEXT NOT NULL,
+	body_shapes TEXT NOT NULL,
 	collection_id TEXT NOT NULL,
 	created_at INTEGER NOT NULL -- CONSTRAINT fk_collection FOREIGN KEY(collection_id) REFERENCES collections(id)
 );

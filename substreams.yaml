@@ -25,14 +25,23 @@ modules:
     output:
       type: proto:dcl.Collections
   
-  - name: map_collection_complete
+  # - name: map_collection_complete
+  #   kind: map
+  #   initialBlock: 15518467
+  #   inputs:
+  #     - source: sf.ethereum.type.v2.Block
+  #     - map: map_collection_created # depends on the map and not store because the complete happens in the same block as the ProxyCreated event, so the store won't have the address yet
+  #   output:
+  #     type: proto:dcl.Items
+
+  - name: map_collections_complete
     kind: map
     initialBlock: 15518467
     inputs:
       - source: sf.ethereum.type.v2.Block
       - map: map_collection_created # depends on the map and not store because the complete happens in the same block as the ProxyCreated event, so the store won't have the address yet
     output:
-      type: proto:dcl.Items
+      type: proto:dcl.CompletedCollections
 
   - name: map_add_items
     kind: map
@@ -89,5 +98,6 @@ modules:
       - map: map_transfers
       - map: map_collection_created
       - map: map_add_items
+      - map: map_collections_complete
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
