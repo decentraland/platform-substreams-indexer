@@ -143,4 +143,12 @@ pub struct CompletedCollections {
     #[prost(string, repeated, tag="1")]
     pub completed_collections: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Block {
+    #[prost(uint64, tag="1")]
+    pub number: u64,
+    #[prost(uint64, tag="2")]
+    pub timestamp: u64,
+}
 // @@protoc_insertion_point(module)

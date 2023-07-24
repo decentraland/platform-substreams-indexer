@@ -94,6 +94,7 @@ modules:
     initialBlock: 15518467
     kind: map
     inputs:
+      - source: sf.ethereum.type.v2.Block
       - map: map_issues
       - map: map_transfers
       - map: map_collection_created

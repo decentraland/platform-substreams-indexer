@@ -1,10 +1,3 @@
--- -- Creation of product table
--- CREATE TABLE IF NOT EXISTS product (
---   product_id INT NOT NULL,
---   name varchar(250) NOT NULL,
---   PRIMARY KEY (product_id)
--- );
-
 CREATE TABLE IF NOT EXISTS cursors (
     id         TEXT NOT NULL CONSTRAINT cursor_pk PRIMARY KEY,
     cursor     TEXT,
@@ -68,4 +61,9 @@ CREATE TABLE IF NOT EXISTS transfers (
 	from_address TEXT NOT NULL,
 	to_address TEXT NOT NULL,
 	created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS blocks (
+	block_number INTEGER NOT NULL PRIMARY KEY,
+	block_timestamp INTEGER NOT NULL
 );

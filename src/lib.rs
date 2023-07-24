@@ -326,7 +326,16 @@ pub fn map_land_transfers(
 }
 
 #[substreams::handlers::map]
+pub fn map_blocks(blk: eth::Block) -> Result<dcl::Block, substreams::errors::Error> {
+    Ok(dcl::Block {
+        number: blk.number,
+        timestamp: blk.timestamp_seconds(),
+    })
+}
+
+#[substreams::handlers::map]
 fn db_out(
+    blk: eth::Block,
     nfts: dcl::NfTs,
     transfers: dcl::Transfers,
     collections: dcl::Collections,
@@ -345,5 +354,9 @@ fn db_out(
     db::transform_collection_database_changes(&mut database_changes, collections);
     // log::info!("In db out items {:?}", items);
     db::transform_item_database_changes(&mut database_changes, items);
+
+    if database_changes.table_changes.len() > 0 {
+        db::push_block_database_changes(&mut database_changes, blk.number, blk.timestamp_seconds());
+    }
     Ok(database_changes)
 }

@@ -179,3 +179,18 @@ pub fn transform_transfers_database_changes(
             .change("updated_at", (None, transfer.created_at));
     }
 }
+
+pub fn push_block_database_changes(
+    changes: &mut DatabaseChanges,
+    block_number: u64,
+    timestamp: u64,
+) {
+    changes
+        .push_change(
+            "blocks",
+            &block_number.to_string(),
+            0,
+            table_change::Operation::Create,
+        )
+        .change("block_timestamp", (None, timestamp));
+}

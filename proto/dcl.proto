@@ -86,3 +86,7 @@ message CompletedCollections {
     repeated string completed_collections = 1;
 }
 
+message Block {
+    uint64 number = 1;
+    uint64 timestamp = 2;
+}
