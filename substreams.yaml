@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: "decentraland_substreams"
-  version: v0.0.1
+  version: v0.0.1-blocks
 
 protobuf:
   files:
@@ -94,6 +94,7 @@ modules:
     initialBlock: 15518467
     kind: map
     inputs:
+      - source: sf.ethereum.type.v2.Block
       - map: map_issues
       - map: map_transfers
       - map: map_collection_created
